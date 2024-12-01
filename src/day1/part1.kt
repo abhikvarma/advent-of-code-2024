@@ -22,4 +22,5 @@ fun main() {
     }
 
     println(totalDiff)
+    // 1873376
 }

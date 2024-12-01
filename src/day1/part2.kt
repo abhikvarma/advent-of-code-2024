@@ -21,4 +21,5 @@ fun main() {
     }
 
     println(similarityScore)
+    // 18997088
 }
