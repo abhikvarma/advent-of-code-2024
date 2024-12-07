@@ -11,7 +11,7 @@ class AreaMap(file: File) {
     private val cols: Int
 
     class Direction(var dir: Int) {
-        val directionList = listOf(
+        private val directionList = listOf(
             0 to -1,
             -1 to 0,
             0 to 1,
@@ -48,9 +48,10 @@ class AreaMap(file: File) {
     }
 
 
-    private fun isBlocked(pos: Pair<Int, Int>, curDir: Direction): Boolean {
+    private fun isBlocked(pos: Pair<Int, Int>, curDir: Direction, obstruction: Pair<Int, Int> = Pair(-1, -1)): Boolean {
         return pos.first + curDir.first() in 0..<rows && pos.second + curDir.second() in 0..<cols &&
-                map[pos.first + curDir.first()][pos.second + curDir.second()] == '#'
+                (map[pos.first + curDir.first()][pos.second + curDir.second()] == '#' ||
+                        obstruction == Pair(pos.first + curDir.first(), pos.second + curDir.second()))
     }
 
     fun getDistinctPosCount(): Int {
@@ -69,39 +70,34 @@ class AreaMap(file: File) {
         return vis.size
     }
 
-    private fun isLoop(obstructionMap: List<CharSequence>, start: Pair<Int, Int>, dir: Int): Boolean {
+    private fun isLoop(obstruction: Pair<Int, Int>, start: Pair<Int, Int>, dir: Int): Boolean {
         var pos = start.copy()
         val curDir = Direction(dir)
-        val vis = mutableMapOf<Pair<Int, Int>, Int>()
+        val vis = mutableMapOf<Pair<Int, Int>, MutableSet<Int>>()
 
         while (pos.first in -1..<rows && pos.second in 0..<cols) {
-            if (pos in vis && vis[pos] == curDir.dir) {
+            if (pos in vis && vis[pos]?.contains(curDir.dir) == true ) {
                 return true
             }
-            vis.put(pos, dir)
+            if (pos !in vis) vis[pos] = mutableSetOf()
+            vis[pos]?.add(curDir.dir)
 
-            while (isBlocked(pos, curDir)) {
+            while (isBlocked(pos, curDir, obstruction)) {
                 curDir.next()
             }
             pos = Pair(pos.first + curDir.first(), pos.second + curDir.second())
         }
+        if (obstruction == Pair(7, 6)) println(vis)
         return false
     }
 
     fun getObstructionCount(): Int {
-        var count = 0
         var pos = guard.copy()
         val curDir = Direction(guardDir)
-        val vis = mutableSetOf<Pair<Int, Int>>()
-        val obstructionMap = map.toMutableList()
-
+        val validObstacles = mutableSetOf<Pair<Int, Int>>()
         while (pos.first in -1..<rows && pos.second in 0..<cols) {
-            vis.add(pos)
-
-            if (!isBlocked(pos, curDir)) {
-                val lines = obstructionMap.get(pos.first)
-                lines[pos.second]
-                obstructionMap.add(obstructionMap.get(pos.first).)
+            if (pos != guard && isLoop(pos, guard, guardDir)) {
+                validObstacles.add(pos)
             }
 
             while (isBlocked(pos, curDir)) {
@@ -109,6 +105,6 @@ class AreaMap(file: File) {
             }
             pos = Pair(pos.first + curDir.first(), pos.second + curDir.second())
         }
-        return count
+        return validObstacles.size
     }
 }
