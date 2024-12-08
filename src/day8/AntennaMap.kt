@@ -36,11 +36,13 @@ class AntennaMap(file: File) {
     }
 
     fun getUniqueAntiNodes2(): Int {
-        var antiNodes = mutableSetOf<Pair<Int, Int>>()
+        val antiNodes = mutableSetOf<Pair<Int, Int>>()
         for ((antenna, pos) in antennas) {
             val size = pos.size
             for (i in 0..<size - 1) {
+                antiNodes.add(pos[i])
                 for (j in i+1..<size) {
+                    antiNodes.add(pos[j])
                     val diff = pos[i].first - pos[j].first to pos[i].second - pos[j].second
 
                     var add = pos[i].first + diff.first to pos[i].second + diff.second
