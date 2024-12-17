@@ -14,6 +14,6 @@ fun main() {
     println(test2)
 
     val part2 = ChronospatialComputer.fromFile(File("src/day17/input.txt")).part2()
-    //
+    // 37221334433268
     println(part2)
 }
